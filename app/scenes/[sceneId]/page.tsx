@@ -22,7 +22,6 @@ export default async function SceneDetail({
   if (!scene) {
     return <div>Not found.</div>;
   }
-  console.log
   const voxels = JSON.parse(scene.voxels);
   return (
     <SceneView

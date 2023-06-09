@@ -23,7 +23,7 @@ export default function UserView({
       <div className="scene-list">
         {scenes.map((scene) => (
           <div className="scene-preview" key={scene.sceneId}>
-            <Scene width={400} height={400} sceneMode={SceneMode.View} voxels={scene.voxels} />
+            <Scene width={400} scale={10} height={400} sceneMode={SceneMode.View} voxels={scene.voxels} />
             <div className="scene-preview-title">
               <Link className="link" href={`/scenes/${scene.sceneId}`}>
                 {scene.title}

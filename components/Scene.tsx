@@ -71,6 +71,7 @@ export function Scene({
   height,
   onAddVoxel,
   onDeleteVoxel,
+  scale: scaleInitial = 20,
 }: {
   voxels: Voxel[];
   sceneMode: SceneMode;
@@ -78,11 +79,12 @@ export function Scene({
   height: number;
   onAddVoxel?: (position: Point3D) => void;
   onDeleteVoxel?: (position: Point3D) => void;
+  scale?: number;
 }) {
   const [azimuth, setAzimuth] = useState(110);
   const [elevation, setElevation] = useState(220);
   const [panTo, setPanTo] = useState<Point2D>({ x: 0, y: 0 });
-  const [scale, setScale] = useState(20);
+  const [scale, setScale] = useState(scaleInitial);
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
     const element = svgRef.current!;

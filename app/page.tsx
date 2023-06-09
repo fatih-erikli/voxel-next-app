@@ -30,7 +30,7 @@ export default async function Home({ searchParams: { offset } }: { searchParams:
       <div className="scene-list">
         {scenes.map((scene) => (
           <div className="scene-preview" key={scene.sceneId}>
-            <Scene width={400} height={400} sceneMode={SceneMode.View} voxels={scene.voxels} />
+            <Scene width={400} scale={10} height={400} sceneMode={SceneMode.View} voxels={scene.voxels} />
             <div className="scene-preview-title">
               <Link className="link" href={`/users/${scene.user.username}`}>
                 {scene.user.username}
