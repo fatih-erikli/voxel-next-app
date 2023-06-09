@@ -1,27 +1,183 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 0.9rem;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.warning {
+  padding: 0.6rem 2rem;
+  background-color: rgb(255, 227, 175);
+}
+
+.canvas {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.canvas svg {
+  display: flex;
+  height: 100%;
+}
+
+[type="color"] {
+  border: 0;
+  padding: 0;
+  width: 200%;
+  height: 200%;
+  cursor: pointer;
+  transform: translate(-25%, -25%);
+}
+
+.color-input {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.link {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+label {
+  display: inherit;
+}
+
+.link:hover {
+  color: black;
+  text-decoration: underline;
+}
+
+.form-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.form-field-valid {
+  color: green;
+}
+
+.text-field {
+  max-width: 14rem;
+}
+
+.success {
+  color: green;
+}
+
+.form-field-invalid {
+  color: red;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* 
+input[type="color"] {
+  appearance: none;
+  padding: 0;
+  border: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 10px;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
+input[type="color"]::-moz-color-swatch {
+  border: none;
+} */
+
+.container {
+  height: 100dvh;
+  width: 100dvw;
+  display: flex;
+  flex-direction: column;
+}
+.footer {
+  padding: 1.5rem;
+}
+.navigation {
+  padding: 1.5rem 1.5rem 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.navigation > .page-title {
+  width: 50%;
+  text-align: center;
+}
+.navigation > :first-child {
+  width: 25%;
+  display: flex;
+  justify-content: start;
+}
+.navigation > :last-child {
+  width: 25%;
+  display: flex;
+  justify-content: end;
+}
+.navigation nav {
+  gap: 0.5rem;
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 1.5rem;
+}
+.document-header {
+  display: flex;
+  justify-content: space-between;
+}
+.tools {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.document-actions {
+  display: flex;
+  gap: 0.2rem;
+}
+.modes {
+  display: flex;
+  gap: 0.2rem;
+}
+.scene-list {
+  display: flex;
+  padding: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+.scene-preview {
+  background-color: rgb(235, 235, 235);
+}
+.scene-preview-title {
+  padding: 1rem;
+}
+.load-more {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1rem 2rem;
 }
