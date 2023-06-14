@@ -95,7 +95,7 @@ export default function RegistationForm() {
       {formSubmissionState === "failed" && <div className="form-line">Something failed.</div>}
       <div>
         <input
-          disabled={!isFormValid || formSubmissionState === "in-progress"}
+          disabled={formSubmissionState === "in-progress"}
           type={"submit"}
           value={formSubmissionState === "in-progress" ? "Wait..." : "Continue"}
         />

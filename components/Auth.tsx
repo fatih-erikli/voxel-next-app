@@ -5,8 +5,8 @@ import AuthContext from "../context/AuthContext";
 import { User } from "@/types/Auth";
 
 export default function Auth({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User|null>(null);
-  const [authToken, setAuthToken] = useState<string>();
+  const [user, setUser] = useState<User | null>(null);
+  const [authToken, setAuthToken] = useState<string | null>(null);
   const authContext: AuthContext = useMemo(() => {
     return {
       user,
@@ -25,14 +25,13 @@ export default function Auth({ children }: { children: ReactNode }) {
               "Content-Type": "application/json",
             },
           });
-          if (!response.ok) {
-            _user = null;
+          let responseJson = await response.json();
+          if (response.ok && responseJson.user) {
+            _user = responseJson.user;
+            _authToken = authToken;
           } else {
-            let responseJson = await response.json();
-            if (responseJson.user) {
-              _user = responseJson.user;
-              _authToken = authToken;
-            }
+            _user = null;
+            _authToken = null;
           }
         }
         setUser(_user);

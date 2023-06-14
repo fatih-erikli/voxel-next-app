@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import { Scene } from "@/components/Scene";
 import { SceneMode, VoxelScene } from "@/types/Voxel";
 import executeRedisQuery from "@/utils/execute-redis-query";
+import makeVoxelsCentered from "@/utils/make-voxels-centered";
 import Link from "next/link";
 
 export default async function Home({ searchParams: { offset } }: { searchParams: { offset: string } }) {
@@ -30,13 +31,19 @@ export default async function Home({ searchParams: { offset } }: { searchParams:
       <div className="scene-list">
         {scenes.map((scene) => (
           <div className="scene-preview" key={scene.sceneId}>
-            <Scene width={400} scale={10} height={400} sceneMode={SceneMode.View} voxels={scene.voxels} />
+            <Scene
+              width={400}
+              scale={10}
+              height={400}
+              sceneMode={SceneMode.View}
+              voxels={makeVoxelsCentered(scene.voxels)}
+            />
             <div className="scene-preview-title">
               <Link className="link" href={`/users/${scene.user.username}`}>
                 {scene.user.username}
               </Link>{" "}
-              /
-              {" "}<Link className="link" href={`/scenes/${scene.sceneId}`}>
+              /{" "}
+              <Link className="link" href={`/scenes/${scene.sceneId}`}>
                 {scene.title}
               </Link>
             </div>

@@ -5,6 +5,7 @@ import { User } from "@/types/Auth";
 import { SceneMode, Voxel, VoxelScene } from "@/types/Voxel";
 import { Scene } from "./Scene";
 import Link from "next/link";
+import makeVoxelsCentered from "@/utils/make-voxels-centered";
 
 export default function UserView({
   user,
@@ -23,7 +24,7 @@ export default function UserView({
       <div className="scene-list">
         {scenes.map((scene) => (
           <div className="scene-preview" key={scene.sceneId}>
-            <Scene width={400} scale={10} height={400} sceneMode={SceneMode.View} voxels={scene.voxels} />
+            <Scene width={400} scale={10} height={400} sceneMode={SceneMode.View} voxels={makeVoxelsCentered(scene.voxels)} />
             <div className="scene-preview-title">
               <Link className="link" href={`/scenes/${scene.sceneId}`}>
                 {scene.title}

@@ -11,7 +11,6 @@ export default function makeVoxelsCentered(voxels: Voxel[]): Voxel[] {
   let maxy = -Infinity;
   let maxz = -Infinity;
   for (const voxel of voxels) {
-    console.log(voxel.position)
     minx = Math.min(voxel.position.x, minx);
     miny = Math.min(voxel.position.y, miny);
     minz = Math.min(voxel.position.z, minz);

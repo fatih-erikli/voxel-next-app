@@ -22,6 +22,7 @@ export default function SceneView({
   mode: SceneMode;
 }) {
   const [title, setTitle] = useState(titlePrefetched);
+  const [isSaveInProgress, setIsSaveInProgress] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [voxels, setVoxels] = useState<Voxel[]>(voxelsPrefetched);
   const [sceneMode, setSceneMode] = useState<SceneMode>(sceneModeInitial);
@@ -48,6 +49,7 @@ export default function SceneView({
     }
   }, [authToken, sceneId]);
   const onSaveClick = async () => {
+    setIsSaveInProgress(true);
     let response = await fetch(`/api/scenes/${sceneId}`, {
       body: JSON.stringify({
         authToken,
@@ -61,6 +63,7 @@ export default function SceneView({
     });
     if (response.ok) {
     }
+    setIsSaveInProgress(false);
   };
   useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -96,7 +99,9 @@ export default function SceneView({
               />
             </>
             <div className="document-actions">
-              <button onClick={onSaveClick}>Save</button>
+              <button disabled={isSaveInProgress} onClick={onSaveClick}>
+                {isSaveInProgress ? "Wait..." : "Save"}
+              </button>
             </div>
           </div>
         )}

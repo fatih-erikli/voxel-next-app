@@ -168,11 +168,11 @@ export function Scene({
       {computedMesh.map(([face, voxel, faceIndex, voxelIndex]) => (
         <polygon
           onClick={() => {
-            if (voxels.length >= MAX_VOXELS) {
-              return;
-            }
             switch (sceneMode) {
               case SceneMode.Draw: {
+                if (voxels.length >= MAX_VOXELS) {
+                  break;
+                }
                 onAddVoxel && onAddVoxel(calculateNextVoxelPosition(voxel.position, faceIndex));
                 break;
               }

@@ -1,6 +1,7 @@
 import SceneView from "@/components/SceneView";
 import { SceneMode } from "@/types/Voxel";
 import executeRedisQuery from "@/utils/execute-redis-query";
+import makeVoxelsCentered from "@/utils/make-voxels-centered";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params: { sceneId } }: { params: { sceneId: string } }): Promise<Metadata> {
@@ -28,7 +29,7 @@ export default async function SceneDetail({
       sceneId={sceneId}
       mode={mode === "edit" ? SceneMode.Draw : SceneMode.View}
       title={scene.title}
-      voxels={voxels}
+      voxels={makeVoxelsCentered(voxels)}
     />
   );
 }

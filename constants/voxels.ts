@@ -1,3 +1,3 @@
-export const MAX_VOXELS = 100;
+export const MAX_VOXELS = 1024;
 export const WARN_AFTER = 60;
 export const INITIAL_VOXEL = { color: "#d5d5d5", position: { x: 0, y: 0, z: 0 } };
