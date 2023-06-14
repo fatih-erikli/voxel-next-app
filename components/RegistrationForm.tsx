@@ -9,32 +9,44 @@ export default function RegistationForm() {
   const usernameAvailabilityQueryDelay = useRef<ReturnType<typeof setTimeout /*[0]*/> | null>(null);
   const [formSubmissionState, setFormSubmissionState] = useState<"in-progress" | "success" | "failed">();
   const onSubmit: FormEventHandler = async (event) => {
-    setFormSubmissionState("in-progress");
     event.preventDefault();
-    let response = await fetch(`/api/register`, {
-      body: JSON.stringify(formState),
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      setFormSubmissionState("failed");
-      return;
-    }
-    let responseJson = await response.json();
-    if (responseJson.ok) {
-      setFormSubmissionState("success");
-    } else {
-      setValidation(responseJson.validationResult);
+    if (isFormValid) {
+      setFormSubmissionState("in-progress");
+      let response = await fetch(`/api/register`, {
+        body: JSON.stringify(formState),
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        setFormSubmissionState("failed");
+        return;
+      }
+      let responseJson = await response.json();
+      if (responseJson.ok) {
+        setFormSubmissionState("success");
+      } else {
+        setFormSubmissionState("failed");
+        setValidation(responseJson.validationResult);
+      }
     }
   };
   const onBlurUsername: FocusEventHandler<HTMLInputElement> = (event) => {
-    if (isUsernameValid(event.target.value)) {
-      setValidation(omit(validation, "username"));
-    } else {
-      setValidation({ ...validation, username: { ok: false, err: "Username is not valid" } });
+    const username = event.target.value;
+    if (username) {
+      if (isUsernameValid(username)) {
+        setValidation(omit(validation, "username"));
+      } else {
+        setValidation({
+          ...validation,
+          username: {
+            ok: false,
+            err: "Username is not valid. It should not contain special characters, be min in 5, max 20 letters.",
+          },
+        });
+      }
     }
   };
   const onChangeUsername: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -91,7 +103,10 @@ export default function RegistationForm() {
             <div className="form-field-invalid">{validation.password.err}</div>
           ))}
       </div>
-      <div className="form-line">We do not ask for an email. <br /> Please use a generated password in your browser and keep them in browsers credentials manager.</div>
+      <div className="form-line">
+        We do not ask for an email. <br /> Please use a generated password in your browser and keep them in browsers
+        credentials manager.
+      </div>
       {formSubmissionState === "failed" && <div className="form-line">Something failed.</div>}
       <div>
         <input
