@@ -7,5 +7,5 @@ export default function isUsernameValid(username: string): boolean {
     - Dots (.)
     - Underscores (_)
   */
-  return /^[a-z0-9_\.+]{5,20}$/.test(username);
+  return /^[a-z0-9_\.]{5,20}$/.test(username);
 }

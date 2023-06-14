@@ -36,16 +36,25 @@ export default function RegistationForm() {
   const onBlurUsername: FocusEventHandler<HTMLInputElement> = (event) => {
     const username = event.target.value;
     if (username) {
-      if (isUsernameValid(username)) {
-        setValidation(omit(validation, "username"));
-      } else {
+      let err;
+      if (event.target.validity.tooShort) {
+        err = "Minimum 5 letters allowed.";
+      } else if (event.target.validity.tooLong) {
+        err = "Maximum 20 letters allowed.";
+      } else if (event.target.validity.patternMismatch) {
+        err = "Only letters, numbers, and underscore is allowed.";
+      }
+
+      if (err) {
         setValidation({
           ...validation,
           username: {
             ok: false,
-            err: "Username is not valid. It should not contain special characters, be min in 5, max 20 letters.",
+            err,
           },
         });
+      } else {
+        setValidation(omit(validation, "username"));
       }
     }
   };
@@ -81,7 +90,10 @@ export default function RegistationForm() {
         <input
           id={"username"}
           required
+          pattern="[a-z0-9_\.]+"
           className="text-field"
+          minLength={5}
+          maxLength={20}
           onBlur={onBlurUsername}
           onChange={onChangeUsername}
           type={"text"}
