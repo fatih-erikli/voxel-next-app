@@ -11,41 +11,41 @@ export async function POST(
   const requestBody = await request.json();
   const username = requestBody.username;
   let usernameValidity;
-  if (!isUsernameValid(username)) {
-    usernameValidity = {
-      ok: false,
-      err: "Username is not valid.",
-    };
-  } else {
+  if (isUsernameValid(username)) {
     const usernameAvailable = await isUsernameAvailable(username);
-    if (!usernameAvailable) {
+    if (usernameAvailable) {
+      usernameValidity = {
+        ok: true,
+      };
+    } else {
       usernameValidity = {
         ok: false,
         err: "Username is taken.",
       };
-    } else {
-      usernameValidity = {
-        ok: true,
-      };
     }
+  } else {
+    usernameValidity = {
+      ok: false,
+      err: "Username is not valid.",
+    };
   }
 
   let passwordValidity;
-  if (!requestBody.password) {
+  if (requestBody.password) {
     passwordValidity = {
-      ok: false,
-      err: "A password required.",
+      ok: true,
     };
   } else {
     passwordValidity = {
-      ok: true,
+      ok: false,
+      err: "A password required.",
     };
   }
 
   const isOk = usernameValidity.ok && passwordValidity.ok;
 
   if (isOk) {
-    const salt = crypto.randomBytes(16).toString("base64");
+    const salt = crypto.randomBytes(16).toString("hex");
     const passwordHashed = sha256(salt + requestBody.password);
     await executeRedisQuery(async (redis) => {
       await redis.hSet(`user:${username}`, {
