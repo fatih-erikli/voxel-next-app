@@ -4,6 +4,7 @@ import isUsernameAvailable from "@/utils/is-username-available";
 import isUsernameValid from "@/utils/is-username-valid";
 import { NextRequest, NextResponse } from "next/server";
 import executeRedisQuery from "@/utils/execute-redis-query";
+import isPasswordStrong from "@/utils/is-password-strong";
 
 export async function POST(
   request: NextRequest
@@ -33,9 +34,16 @@ export async function POST(
 
   let passwordValidity;
   if (requestBody.password) {
-    passwordValidity = {
-      ok: true,
-    };
+    if (isPasswordStrong(requestBody.password)) {
+      passwordValidity = {
+        ok: true,
+      };
+    } else {
+      passwordValidity = {
+        ok: false,
+        err: "Choose a stronger password."
+      };
+    }
   } else {
     passwordValidity = {
       ok: false,

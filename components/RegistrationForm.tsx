@@ -20,16 +20,24 @@ export default function RegistationForm() {
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) {
-        setFormSubmissionState("failed");
-        return;
+
+      let responseJson;
+      try {
+        responseJson = await response.json();
+      } catch (e) {
+        if (!response.ok) {
+          setFormSubmissionState("failed");
+          return;
+        }
       }
-      let responseJson = await response.json();
-      if (responseJson.ok) {
-        setFormSubmissionState("success");
-      } else {
-        setFormSubmissionState("failed");
-        setValidation(responseJson.validationResult);
+
+      if (responseJson) {
+        if (responseJson.ok) {
+          setFormSubmissionState("success");
+        } else {
+          setFormSubmissionState("failed");
+          setValidation(responseJson.validationResult);
+        }
       }
     }
   };
@@ -107,7 +115,7 @@ export default function RegistationForm() {
       </div>
       <div className="form-line">
         <label htmlFor="username">Password</label>
-        <input id={"username"} required className="text-field" onChange={onChangePassword} type={"password"} />
+        <input id="username" required className="text-field" onChange={onChangePassword} type={"password"} />
         {validation.password &&
           (validation.password.ok ? (
             <div className="form-field-valid">This is ok</div>
