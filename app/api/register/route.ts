@@ -1,10 +1,13 @@
 import sha256 from "sha256";
 import crypto from "crypto";
+import dotenv from "dotenv";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isUsernameValid from "@/utils/is-username-valid";
 import { NextRequest, NextResponse } from "next/server";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import isPasswordStrong from "@/utils/is-password-strong";
+
+dotenv.config();
 
 export async function POST(
   request: NextRequest
@@ -55,7 +58,8 @@ export async function POST(
 
   if (isOk) {
     const salt = crypto.randomBytes(16).toString("hex");
-    const passwordHashed = sha256(salt + requestBody.password);
+    const pepper = process.env.USER_PASSWORD_PEPPER;
+    const passwordHashed = sha256(salt + pepper + requestBody.password);
     await executeRedisQuery(async (redis) => {
       await redis.hSet(`user:${username}`, {
         username: requestBody.username,
