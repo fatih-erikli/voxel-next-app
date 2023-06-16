@@ -1,7 +1,8 @@
 export type AuthContext = {
   authToken?: string | null;
   user: User | null;
-  setAuthToken: (authToken: string, user?: User) => Promise<void>;
+  logout: () => Promise<void>;
+  setAuthToken: (authToken: string, user?: User, createBrowserSession?: true) => Promise<void>;
 };
 export type User = {
   username: string;

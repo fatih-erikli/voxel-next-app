@@ -11,6 +11,7 @@ export async function POST(
   const requestBody = await request.json();
   const username = requestBody.username;
   let usernameValidity;
+
   if (isUsernameValid(username)) {
     const usernameAvailable = await isUsernameAvailable(username);
     if (usernameAvailable) {

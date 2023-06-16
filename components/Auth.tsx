@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { User } from "@/types/Auth";
 
@@ -11,7 +11,21 @@ export default function Auth({ children }: { children: ReactNode }) {
     return {
       user,
       authToken,
-      setAuthToken: async (authToken: string, user?: User) => {
+      logout: async () => {
+        let response = await fetch(`/api/auth`, {
+          body: JSON.stringify({ authToken, deleteSession: true }),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.status === 202) {
+          sessionStorage.removeItem("auth-token");
+          setAuthToken(null);
+          setUser(null);
+        }
+      },
+      setAuthToken: async (authToken: string, user?: User, createBrowserSession?: true) => {
         let _authToken;
         let _user;
         if (user) {
@@ -34,10 +48,21 @@ export default function Auth({ children }: { children: ReactNode }) {
             _authToken = null;
           }
         }
+        if (createBrowserSession) {
+          sessionStorage.setItem("auth-token", authToken);
+        }
         setUser(_user);
         setAuthToken(_authToken);
       },
     };
   }, [user, authToken]);
+  useEffect(() => {
+    if (!authToken) {
+      const authTokenStored = sessionStorage.getItem("auth-token");
+      if (authTokenStored) {
+        authContext.setAuthToken(authTokenStored);
+      }
+    }
+  }, [authToken, authContext]);
   return <AuthContext.Provider value={authContext}>{children}</AuthContext.Provider>;
 }

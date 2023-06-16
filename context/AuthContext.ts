@@ -4,6 +4,7 @@ import { createContext } from "react";
 const AuthContext = createContext<AuthContext>({
   authToken: null,
   user: null,
+  async logout() {},
   async setAuthToken() {}
 });
 export default AuthContext;

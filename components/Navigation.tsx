@@ -20,6 +20,10 @@ export default function Navigation({
     event.preventDefault();
     setShowTitleDialogue(true);
   };
+  const onLogoutClick: PointerEventHandler<HTMLAnchorElement> = (event) => {
+    event.preventDefault();
+    auth.logout();
+  }
   return (
     <header className="navigation">
       <nav>
@@ -55,6 +59,9 @@ export default function Navigation({
           <>
             <Link className="link" href={`/users/${auth.user.username}`}>
               {auth.user.username}
+            </Link>
+            <Link className="link" href={`/users/${auth.user.username}`} onClick={onLogoutClick}>
+              Logout
             </Link>
           </>
         ) : (

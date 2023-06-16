@@ -5,19 +5,22 @@ import executeRedisQuery from "@/utils/execute-redis-query";
 export async function POST(request: NextRequest): Promise<NextResponse<{ user?: User }>> {
   const requestBody = await request.json();
   const authToken = requestBody.authToken;
+  const deleteSession = requestBody.authToken;
   let userLoggedIn;
-  await executeRedisQuery(async (redis) => {
-    const session = await redis.hGetAll(`session:${authToken}`);
-    if (session) {
-      userLoggedIn = {
-        username: session.user,
-      }
+  let sessionDeleted;
+  if (deleteSession) {
+    await executeRedisQuery((redis) => redis.del(`session:${authToken}`));
+    sessionDeleted = true;
+  } else {
+    const username = await executeRedisQuery((redis) => redis.get(`session:${authToken}`));
+    if (username) {
+      userLoggedIn = { username };
     }
-  })
+  }
   return NextResponse.json(
     {
       user: userLoggedIn,
     },
-    { status: userLoggedIn ? 202 : 401 }
+    { status: sessionDeleted ? 202 : userLoggedIn ? 202 : 401 }
   );
 }
