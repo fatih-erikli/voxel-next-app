@@ -7,7 +7,7 @@ import { Metadata } from "next";
 export async function generateMetadata({ params: { sceneId } }: { params: { sceneId: string } }): Promise<Metadata> {
   const scene = await executeRedisQuery((redis) => redis.hGetAll(`scene:${sceneId}`));
   return {
-    title: scene ? scene.title : "Iceland",
+    title: scene.title ? scene.title : "Iceland",
   };
 }
 
@@ -20,9 +20,10 @@ export default async function SceneDetail({
 }) {
   const scene = await executeRedisQuery((redis) => redis.hGetAll(`scene:${sceneId}`));
 
-  if (!scene) {
+  if (!scene || !scene.voxels) {
     return <div>Not found.</div>;
   }
+
   const voxels = JSON.parse(scene.voxels);
   return (
     <SceneView

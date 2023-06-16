@@ -15,7 +15,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ authTok
     if (matchedUser) {
       if (matchedUser.password === passwordHashed) {
         authToken = crypto.randomBytes(24).toString("hex");
-        await redis.set(`session:${authToken}`, matchedUser.username);
+        await redis.setEx(`session:${authToken}`, 60 * 60 * 30, matchedUser.username);
         user = { username: matchedUser.username }; // user model has only a username publicly available for now
       }
     }
