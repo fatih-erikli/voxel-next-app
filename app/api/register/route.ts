@@ -2,9 +2,8 @@ import sha256 from "sha256";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import { NextRequest, NextResponse } from "next/server";
-import executeRedisQuery from "@/utils/execute-redis-query";
-
 import { z } from "zod";
+import executeRedisQuery from "@/utils/execute-redis-query";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isEmailAvailable from "@/utils/is-email-available";
 
@@ -15,7 +14,7 @@ const schema = z.object({
     .string()
     .min(5, { message: "Username must be min in 5 characters." })
     .max(20, { message: "Username must be max in 20 characters." })
-    .regex(/^[a-z0-9_\.]+$/, { message: "Username must not contain special characters." })
+    .regex(/^[a-z0-9_\.]+$/, { message: "Only lowercase letters, numbers, and underscore is allowed." })
     .refine(isUsernameAvailable, "Username has been taken."),
   email: z.string().toLowerCase().email().refine(isEmailAvailable, "There is an user registered with the email."),
   password: z.string().regex(/(?=^.{6,}$)(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]).*/, {
