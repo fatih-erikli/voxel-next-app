@@ -8,6 +8,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { INITIAL_VOXEL } from "@/constants/voxels";
 import AuthContext from "@/context/AuthContext";
 import isEqualPoint3D from "@/utils/is-equal-point3d";
+import SceneOnCanvas from "./SceneOnCanvas";
 
 export default function SceneView({
   voxels: voxelsPrefetched,
@@ -105,7 +106,7 @@ export default function SceneView({
           </div>
         )}
         <div className="canvas" ref={canvasRef}>
-          <Scene
+          <SceneOnCanvas
             voxels={voxels}
             sceneMode={sceneMode}
             width={size.width}

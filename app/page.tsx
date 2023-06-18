@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import { Scene } from "@/components/Scene";
+import SceneOnCanvas from "@/components/SceneOnCanvas";
 import { SceneMode, VoxelScene } from "@/types/Voxel";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import makeVoxelsCentered from "@/utils/make-voxels-centered";
@@ -31,7 +32,7 @@ export default async function Home({ searchParams: { offset } }: { searchParams:
       <div className="scene-list">
         {scenes.map((scene) => (
           <div className="scene-preview" key={scene.sceneId}>
-            <Scene
+            <SceneOnCanvas
               width={400}
               scale={10}
               height={400}
