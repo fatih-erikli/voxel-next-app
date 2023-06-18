@@ -4,7 +4,7 @@ import { omit } from "@/utils/omit";
 import { ChangeEventHandler, FocusEventHandler, FormEventHandler, useRef, useState } from "react";
 
 export default function RegistationForm() {
-  const [formState, setFormState] = useState<RegistrationFormState>({ username: "", password: "" });
+  const [formState, setFormState] = useState<RegistrationFormState>({ username: "", password: "", email: "" });
   const [validation, setValidation] = useState<RegistrationFormValidation>({});
   const usernameAvailabilityQueryDelay = useRef<ReturnType<typeof setTimeout /*[0]*/> | null>(null);
   const [formSubmissionState, setFormSubmissionState] = useState<"in-progress" | "success" | "failed">();
@@ -87,6 +87,9 @@ export default function RegistationForm() {
   const onChangePassword: ChangeEventHandler<HTMLInputElement> = (event) => {
     setFormState({ ...formState, password: event.target.value });
   };
+  const onChangeEmail: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setFormState({ ...formState, email: event.target.value });
+  };
   const isFormValid =
     (!validation.username || validation.username.ok) && (!validation.password || validation.password.ok);
   return formSubmissionState === "success" ? (
@@ -124,8 +127,14 @@ export default function RegistationForm() {
           ))}
       </div>
       <div className="form-line">
-        We do not ask for an email. <br /> Please use a generated password in your browser and keep them in browsers
-        credentials manager.
+        <label htmlFor="username">Email</label>
+        <input id="email" required className="text-field" onChange={onChangeEmail} type={"email"} />
+        {validation.email &&
+          (validation.email.ok ? (
+            <div className="form-field-valid">This is ok</div>
+          ) : (
+            <div className="form-field-invalid">{validation.email.err}</div>
+          ))}
       </div>
       {formSubmissionState === "failed" && <div className="form-line">Something failed.</div>}
       <div>

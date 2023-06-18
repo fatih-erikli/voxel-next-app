@@ -4,11 +4,10 @@ import { Point3D, SceneMode, Voxel } from "@/types/Voxel";
 import { Scene } from "./Scene";
 import Navigation from "./Navigation";
 import Tools from "./Tools";
-import { PointerEventHandler, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { INITIAL_VOXEL } from "@/constants/voxels";
 import AuthContext from "@/context/AuthContext";
 import isEqualPoint3D from "@/utils/is-equal-point3d";
-import { downloadURI } from "@/utils/download-uri";
 
 export default function SceneView({
   voxels: voxelsPrefetched,
@@ -110,7 +109,7 @@ export default function SceneView({
             voxels={voxels}
             sceneMode={sceneMode}
             width={size.width}
-            height={size.height}
+            height={Math.floor(size.height) - 60}
             onAddVoxel={onAddVoxel}
             onDeleteVoxel={onDeleteVoxel}
           />

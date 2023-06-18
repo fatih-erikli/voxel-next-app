@@ -13,7 +13,6 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ user?: 
     sessionDeleted = true;
   } else {
     const username = await executeRedisQuery((redis) => redis.get(`session:${authToken}`));
-    console.log(username)
     if (username) {
       userLoggedIn = { username };
     }

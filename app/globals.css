@@ -17,10 +17,10 @@ code {
 }
 
 .canvas {
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
 }
 
 .canvas svg {
@@ -87,30 +87,9 @@ label {
   gap: 0.5rem;
 }
 
-/* 
-input[type="color"] {
-  appearance: none;
-  padding: 0;
-  border: none;
-  width: 1.4rem;
-  height: 1.4rem;
-  border-radius: 10px;
-}
-
-input[type="color"]::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-input[type="color"]::-webkit-color-swatch {
-  border: none;
-}
-
-input[type="color"]::-moz-color-swatch {
-  border: none;
-} */
-
 .container {
   height: 100dvh;
+  max-height: 100dvh;
   width: 100dvw;
   display: flex;
   flex-direction: column;

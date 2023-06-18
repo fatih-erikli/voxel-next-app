@@ -6,6 +6,7 @@ import isUsernameValid from "@/utils/is-username-valid";
 import { NextRequest, NextResponse } from "next/server";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import isPasswordStrong from "@/utils/is-password-strong";
+import isEmailValid from "@/utils/is-email-valid";
 
 dotenv.config();
 
@@ -50,7 +51,26 @@ export async function POST(
   } else {
     passwordValidity = {
       ok: false,
-      err: "A password required.",
+      err: "Type your password.",
+    };
+  }
+
+  let emailValidity;
+  if (requestBody.email) {
+    if (isEmailValid(requestBody.password)) {
+      emailValidity = {
+        ok: true,
+      };
+    } else {
+      emailValidity = {
+        ok: false,
+        err: "Email is not valid."
+      };
+    }
+  } else {
+    emailValidity = {
+      ok: false,
+      err: "Email is required.",
     };
   }
 
@@ -64,6 +84,7 @@ export async function POST(
       await redis.hSet(`user:${username}`, {
         username: requestBody.username,
         password: passwordHashed,
+        email: requestBody.email,
         salt,
       });
     });
