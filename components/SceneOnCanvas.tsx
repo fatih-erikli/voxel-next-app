@@ -1,6 +1,5 @@
 "use client";
 import Color from "color";
-import { MAX_VOXELS } from "@/constants/voxels";
 import { Point2D, Point3D, SceneMode, Voxel } from "@/types/Voxel";
 import { enumerateIterable } from "@/utils/enumerate-iterable";
 import { Mat4, Vec2, Vec3 } from "gl-matrix/dist/esm";
@@ -20,12 +19,12 @@ const CUBE_VERTEX: Vec3[] = [
 ];
 
 const CUBE_FACES: number[][] = [
-  [0, 1, 2, 3], // front
-  [1, 5, 6, 2], // right
-  [0, 4, 7, 3], // left
-  [0, 4, 5, 1], // bottom
-  [4, 5, 6, 7], // back
-  [3, 7, 6, 2], // top
+  [0, 1, 2, 3],
+  [1, 5, 6, 2],
+  [0, 4, 7, 3],
+  [0, 4, 5, 1],
+  [4, 5, 6, 7],
+  [3, 7, 6, 2],
 ];
 
 enum CubeFaceName {
@@ -52,14 +51,6 @@ function calculateNextVoxelPosition(position: Point3D, face: CubeFaceName, unitL
     case CubeFaceName.Back:
       return { x: position.x, y: position.y, z: position.z - unitLength };
   }
-}
-
-function renderPolygonPoints(mesh: Vec3[]) {
-  let result = "";
-  for (const vec3 of mesh) {
-    result += `${result && " "}${vec3.x}, ${vec3.y}`;
-  }
-  return result;
 }
 
 function clamp(number: number, min: number, max: number) {
@@ -185,8 +176,8 @@ export default function SceneOnCanvas({
 
     const canvas = canvasRef.current!;
     const context = canvas.getContext("2d")!;
-    const { x, y } = canvas.getBoundingClientRect();
-    const pointOnCanvas = { x: event.clientX - x, y: event.clientY - y };
+    const canvasClientRect = canvas.getBoundingClientRect();
+    const pointOnCanvas = { x: event.clientX - canvasClientRect.x, y: event.clientY - canvasClientRect.y };
 
     for (const [points, voxel, faceIndex] of reverseArray(computedMesh)) {
       const path = new Path2D();
@@ -195,7 +186,6 @@ export default function SceneOnCanvas({
           x: panTo.x + point.x + width / 2,
           y: panTo.y + point.y + height / 2,
         };
-
         if (moveTo) {
           path.moveTo(screenCoordinates.x, screenCoordinates.y);
         } else {
