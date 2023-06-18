@@ -213,6 +213,7 @@ export default function SceneOnCanvas({
     <canvas
       ref={canvasRef}
       touch-action="none"
+      onContextMenu={(event) => {event.preventDefault()}}
       onPointerMove={(event) => {
         if (event.buttons === 1) {
           setAzimuth(azimuth - event.movementX);
