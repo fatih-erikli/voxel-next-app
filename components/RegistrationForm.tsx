@@ -85,9 +85,11 @@ export default function RegistationForm() {
     }, 1000);
   };
   const onChangePassword: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setValidation(omit(validation, "password"));
     setFormState({ ...formState, password: event.target.value });
   };
   const onChangeEmail: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setValidation(omit(validation, "email"));
     setFormState({ ...formState, email: event.target.value });
   };
   const isFormValid =

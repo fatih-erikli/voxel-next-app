@@ -3,6 +3,7 @@ type RegistrationFormState = {
   password: string;
   email: string;
 };
+
 type RegistrationFormValidation = {
-  [property in keyof RegistrationFormState]?: { ok: boolean; err?: string };
-};
+  [property in keyof RegistrationFormState]?: {ok: boolean; err?: string;}
+}

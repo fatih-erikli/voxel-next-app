@@ -3,11 +3,15 @@ import { FormEventHandler, useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 
+type LoginFormState = {
+  username: string;
+  password: string;
+}
+
 export default function LoginForm() {
-  const [formState, setFormState] = useState<RegistrationFormState>({ username: "", password: "" });
+  const [formState, setFormState] = useState<LoginFormState>({ username: "", password: "" });
   const [formSubmissionState, setFormSubmissionState] = useState<"in-progress" | "success" | "failed">();
   const authContext = useContext(AuthContext);
-  const router = useRouter();
   const onSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
     setFormSubmissionState("in-progress");
