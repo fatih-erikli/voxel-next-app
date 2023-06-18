@@ -31,6 +31,7 @@ export default function SceneView({
   const { authToken } = useContext(AuthContext);
   const canvasRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(20);
   useEffect(() => {
     if (authToken) {
       (async function () {
@@ -84,10 +85,13 @@ export default function SceneView({
   const onDeleteVoxel = (position: Point3D) => {
     setVoxels(voxels.filter((voxel) => !isEqualPoint3D(voxel.position, position)));
   };
+  const onScaleChange = (scale: number) => {
+    setScale(scale)
+  }
   return (
     <>
-      <Navigation title={title} titleEditable={isOwner} onTitleChange={setTitle} />
-      <div className="main" ref={mainRef}>
+      {scale < 30 && <Navigation stickyHeader title={title} titleEditable={isOwner} onTitleChange={setTitle} />}
+      <div className="main full-screen" ref={mainRef}>
         {(sceneMode === SceneMode.Draw || sceneMode === SceneMode.Delete) && (
           <div className="document-header">
             <>
@@ -107,10 +111,11 @@ export default function SceneView({
         )}
         <div className="canvas" ref={canvasRef}>
           <SceneOnCanvas
+            onScaleChange={onScaleChange}
             voxels={voxels}
             sceneMode={sceneMode}
             width={size.width}
-            height={Math.floor(size.height) - 60}
+            height={size.height}
             onAddVoxel={onAddVoxel}
             onDeleteVoxel={onDeleteVoxel}
           />

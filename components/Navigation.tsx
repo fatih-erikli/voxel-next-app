@@ -9,10 +9,12 @@ export default function Navigation({
   title,
   titleEditable,
   onTitleChange,
+  stickyHeader,
 }: {
   title?: string;
   titleEditable?: boolean;
   onTitleChange?: (title: string) => void;
+  stickyHeader?: true;
 }) {
   const [showTitleDialogue, setShowTitleDialogue] = useState(false);
   const auth = useContext(AuthContext);
@@ -25,7 +27,7 @@ export default function Navigation({
     auth.logout();
   }
   return (
-    <header className="navigation">
+    <header className={stickyHeader ? "navigation navigation--sticky": "navigation"}>
       <nav>
         <Link className={"link"} href={"/"}>
           Home

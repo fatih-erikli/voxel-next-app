@@ -1,5 +1,6 @@
 "use client";
 import Color from "color";
+import { MAX_VOXELS } from "@/constants/voxels";
 import { Point2D, Point3D, SceneMode, Voxel } from "@/types/Voxel";
 import { enumerateIterable } from "@/utils/enumerate-iterable";
 import { Mat4, Vec2, Vec3 } from "gl-matrix/dist/esm";
@@ -65,6 +66,7 @@ export default function SceneOnCanvas({
   onAddVoxel,
   onDeleteVoxel,
   scale: scaleInitial = 20,
+  onScaleChange,
 }: {
   voxels: Voxel[];
   sceneMode: SceneMode;
@@ -73,6 +75,7 @@ export default function SceneOnCanvas({
   onAddVoxel?: (position: Point3D) => void;
   onDeleteVoxel?: (position: Point3D) => void;
   scale?: number;
+  onScaleChange?: (scale: number) => void
 }) {
   const [azimuth, setAzimuth] = useState(110);
   const [elevation, setElevation] = useState(220);
@@ -84,9 +87,9 @@ export default function SceneOnCanvas({
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       if (event.ctrlKey) {
-        setScale((scale) =>
-          clamp(scale - (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX / 2 : event.deltaY / 2), 4, 200)
-        );
+        const _scale = clamp(scale - (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX / 2 : event.deltaY / 2), 4, 200);
+        setScale(_scale);
+        onScaleChange && onScaleChange(_scale);
       } else {
         const deltaX = event.deltaX / 4;
         const deltaY = event.deltaY / 4;
@@ -98,7 +101,7 @@ export default function SceneOnCanvas({
     return () => {
       element.removeEventListener("wheel", onWheel);
     };
-  }, []);
+  }, [scale, onScaleChange]);
   const projection = useMemo(() => {
     const angleX = (azimuth / 180) * Math.PI;
     const angleY = (elevation / 180) * Math.PI;
