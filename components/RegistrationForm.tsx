@@ -50,7 +50,7 @@ export default function RegistationForm() {
       } else if (event.target.validity.tooLong) {
         err = "Maximum 20 letters allowed.";
       } else if (event.target.validity.patternMismatch) {
-        err = "Only letters, numbers, and underscore is allowed.";
+        err = "Only lowercase letters, numbers, and underscore is allowed.";
       }
 
       if (err) {

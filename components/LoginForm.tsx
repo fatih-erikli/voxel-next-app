@@ -1,7 +1,6 @@
 "use client";
 import { FormEventHandler, useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
-import { useRouter } from "next/navigation";
 
 type LoginFormState = {
   username: string;
