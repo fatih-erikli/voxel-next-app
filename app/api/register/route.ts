@@ -27,9 +27,7 @@ export async function POST(
 ): Promise<NextResponse<{ ok: boolean; validationResult?: RegistrationFormValidation }>> {
   const requestBody = await request.json();
   const username = requestBody.username;
-
   const validation = await schema.safeParseAsync(requestBody);
-
   if (validation.success) {
     const salt = crypto.randomBytes(16).toString("hex");
     const pepper = process.env.USER_PASSWORD_PEPPER;
@@ -43,7 +41,6 @@ export async function POST(
       });
       await redis.sAdd("emails", validation.data.email);
     });
-
     return NextResponse.json({ ok: true }, { status: 201 });
   } else {
     const getIssue = (key: string) => {
