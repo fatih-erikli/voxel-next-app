@@ -43,24 +43,14 @@ export async function POST(
     });
     return NextResponse.json({ ok: true }, { status: 201 });
   } else {
-    const getIssue = (key: string) => {
-      for (const issue of validation.error.issues) {
-        if (issue.path[0] === key) {
-          return { ok: false, err: issue.message };
-        }
-      }
-      return {
-        ok: true,
-      };
-    };
+    const validationResult: RegistrationFormValidation = {};
+    for (const issue of validation.error.issues) {
+      validationResult[issue.path[0] as keyof RegistrationFormState] = { ok: false, err: issue.message };
+    }
     return NextResponse.json(
       {
         ok: false,
-        validationResult: {
-          username: getIssue("username"),
-          email: getIssue("email"),
-          password: getIssue("password"),
-        },
+        validationResult,
       },
       { status: 400 }
     );
