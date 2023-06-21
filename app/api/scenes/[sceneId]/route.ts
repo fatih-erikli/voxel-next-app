@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import createConfiguredMongoClient from "@/utils/create-configured-mongo-client";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import cleanVoxelContent from "@/utils/clean-voxel-content";
 

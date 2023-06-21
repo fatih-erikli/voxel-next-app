@@ -167,4 +167,5 @@ label {
 
 .full-screen {
   height: 100vh;
+  padding: 0;
 }
