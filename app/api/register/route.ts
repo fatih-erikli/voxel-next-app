@@ -1,8 +1,8 @@
 import sha256 from "sha256";
 import crypto from "crypto";
 import dotenv from "dotenv";
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { NextRequest, NextResponse } from "next/server";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isEmailAvailable from "@/utils/is-email-available";
