@@ -6,13 +6,13 @@ import executeRedisQuery from "@/utils/execute-redis-query";
 
 dotenv.config();
 
-export async function POST(request: NextRequest): Promise<NextResponse<{ user: User | null }>> {
+export async function POST(request: NextRequest): Promise<NextResponse<{ user?: User }>> {
   const requestBody = await request.json();
   const authToken = requestBody.authToken;
   const deleteSession = requestBody.deleteSession;
 
   let sessionDeleted;
-  let userLoggedIn;
+  let user;
   let jwtVerification;
 
   try {
@@ -29,15 +29,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ user: U
     } else {
       const username = await executeRedisQuery((redis) => redis.get(`session:${sessionKey}`));
       if (username) {
-        userLoggedIn = { username };
+        user = { username };
       }
     }
   }
 
-  return NextResponse.json(
-    {
-      user: userLoggedIn ? userLoggedIn : null,
-    },
-    { status: sessionDeleted ? 202 : userLoggedIn ? 202 : 401 }
-  );
+  return NextResponse.json({ user }, { status: sessionDeleted ? 202 : user ? 202 : 401 });
 }
