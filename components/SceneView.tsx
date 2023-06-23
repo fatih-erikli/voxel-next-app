@@ -15,11 +15,13 @@ export default function SceneView({
   title: titlePrefetched,
   sceneId,
   mode: sceneModeInitial,
+  renderer = "canvas",
 }: {
   voxels: Voxel[];
   title: string;
   sceneId: string;
   mode: SceneMode;
+  renderer: "svg" | "canvas";
 }) {
   const [title, setTitle] = useState(titlePrefetched);
   const [isSaveInProgress, setIsSaveInProgress] = useState(false);
@@ -86,8 +88,8 @@ export default function SceneView({
     setVoxels(voxels.filter((voxel) => !isEqualPoint3D(voxel.position, position)));
   };
   const onScaleChange = (scale: number) => {
-    setScale(scale)
-  }
+    setScale(scale);
+  };
   return (
     <>
       {scale < 30 && <Navigation stickyHeader title={title} titleEditable={isOwner} onTitleChange={setTitle} />}
@@ -110,15 +112,27 @@ export default function SceneView({
           </div>
         )}
         <div className="canvas" ref={canvasRef}>
-          <SceneOnCanvas
-            onScaleChange={onScaleChange}
-            voxels={voxels}
-            sceneMode={sceneMode}
-            width={size.width}
-            height={size.height}
-            onAddVoxel={onAddVoxel}
-            onDeleteVoxel={onDeleteVoxel}
-          />
+          {renderer === "canvas" ? (
+            <SceneOnCanvas
+              onScaleChange={onScaleChange}
+              voxels={voxels}
+              sceneMode={sceneMode}
+              width={size.width}
+              height={size.height}
+              onAddVoxel={onAddVoxel}
+              onDeleteVoxel={onDeleteVoxel}
+            />
+          ) : (
+            <Scene
+              onScaleChange={onScaleChange}
+              voxels={voxels}
+              sceneMode={sceneMode}
+              width={size.width}
+              height={size.height}
+              onAddVoxel={onAddVoxel}
+              onDeleteVoxel={onDeleteVoxel}
+            />
+          )}
         </div>
       </div>
     </>

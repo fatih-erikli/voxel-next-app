@@ -72,6 +72,7 @@ export function Scene({
   onAddVoxel,
   onDeleteVoxel,
   scale: scaleInitial = 20,
+  onScaleChange,
 }: {
   voxels: Voxel[];
   sceneMode: SceneMode;
@@ -80,6 +81,7 @@ export function Scene({
   onAddVoxel?: (position: Point3D) => void;
   onDeleteVoxel?: (position: Point3D) => void;
   scale?: number;
+  onScaleChange?: (scale: number) => void;
 }) {
   const [azimuth, setAzimuth] = useState(110);
   const [elevation, setElevation] = useState(220);
@@ -91,9 +93,9 @@ export function Scene({
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       if (event.ctrlKey) {
-        setScale((scale) =>
-          clamp(scale - (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX / 2 : event.deltaY / 2), 4, 200)
-        );
+        const _scale = clamp(scale - (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX / 2 : event.deltaY / 2), 4, 200);
+        onScaleChange && onScaleChange(_scale);
+        setScale(_scale);
       } else {
         const deltaX = event.deltaX / 4;
         const deltaY = event.deltaY / 4;
@@ -105,7 +107,7 @@ export function Scene({
     return () => {
       element.removeEventListener("wheel", onWheel);
     };
-  }, []);
+  }, [onScaleChange, scale]);
   const projection = useMemo(() => {
     const angleX = (azimuth / 180) * Math.PI;
     const angleY = (elevation / 180) * Math.PI;
