@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import sha256 from "sha256";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/types/Auth";
 import executeRedisQuery from "@/utils/execute-redis-query";
@@ -20,8 +19,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ authTok
     if (matchedUser) {
       if (matchedUser.password === passwordHashed) {
         const sessionKey = crypto.randomBytes(24).toString("hex");
-        await redis.setEx(`session:${sessionKey}`, 60 * 30, matchedUser.username);
-        authToken = jwt.sign({ sessionKey }, process.env.JWT_SECRET_KEY!, { expiresIn: 60 * 30 });
+        await redis.setEx(`session:${sha256(sessionKey)}`, 60 * 30, matchedUser.username);
+        authToken = sessionKey;
         user = { username: matchedUser.username }; // user model has only a username publicly available for now
       }
     }
