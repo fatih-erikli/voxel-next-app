@@ -138,7 +138,7 @@ export default function RegistationForm() {
           ))}
       </div>
       <div className="form-line">
-        <label htmlFor="username">Password 2</label>
+        <label htmlFor="username">Password confirmation</label>
         <input
           id="username"
           required
