@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isEmailAvailable from "@/utils/is-email-available";
+import { decryptEmailAddress, encryptEmailAddress } from "@/utils/encrypt-email-address";
 
 dotenv.config();
 
@@ -32,14 +33,16 @@ export async function POST(
     const salt = crypto.randomBytes(16).toString("hex");
     const pepper = process.env.USER_PASSWORD_PEPPER;
     const passwordHashed = sha256(salt + pepper + requestBody.password);
+    const emailEncrypted = encryptEmailAddress(validation.data.email);
+    console.log(decryptEmailAddress(emailEncrypted))
     await executeRedisQuery(async (redis) => {
       await redis.hSet(`user:${username}`, {
         username: validation.data.username,
         password: passwordHashed,
-        email: validation.data.email,
+        email: emailEncrypted,
         salt,
       });
-      await redis.sAdd("emails", validation.data.email);
+      await redis.sAdd("emails", emailEncrypted);
     });
     return NextResponse.json({ ok: true }, { status: 201 });
   } else {
