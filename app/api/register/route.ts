@@ -34,7 +34,6 @@ export async function POST(
     const pepper = process.env.USER_PASSWORD_PEPPER;
     const passwordHashed = sha256(salt + pepper + requestBody.password);
     const emailEncrypted = encryptEmailAddress(validation.data.email);
-    console.log(decryptEmailAddress(emailEncrypted))
     await executeRedisQuery(async (redis) => {
       await redis.hSet(`user:${username}`, {
         username: validation.data.username,
