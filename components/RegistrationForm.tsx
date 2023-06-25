@@ -4,7 +4,12 @@ import { omit } from "@/utils/omit";
 import { ChangeEventHandler, FocusEventHandler, FormEventHandler, useRef, useState } from "react";
 
 export default function RegistationForm() {
-  const [formState, setFormState] = useState<RegistrationFormState>({ username: "", password: "", email: "" });
+  const [formState, setFormState] = useState<RegistrationFormState>({
+    username: "",
+    password: "",
+    passwordConfirmation: "",
+    email: "",
+  });
   const [validation, setValidation] = useState<RegistrationFormValidation>({});
   const usernameAvailabilityQueryDelay = useRef<ReturnType<typeof setTimeout /*[0]*/> | null>(null);
   const [formSubmissionState, setFormSubmissionState] = useState<"in-progress" | "success" | "failed">();
@@ -88,6 +93,10 @@ export default function RegistationForm() {
     setValidation(omit(validation, "password"));
     setFormState({ ...formState, password: event.target.value });
   };
+  const onChangePasswordConfirmation: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setValidation(omit(validation, "passwordConfirmation"));
+    setFormState({ ...formState, passwordConfirmation: event.target.value });
+  };
   const onChangeEmail: ChangeEventHandler<HTMLInputElement> = (event) => {
     setValidation(omit(validation, "email"));
     setFormState({ ...formState, email: event.target.value });
@@ -126,6 +135,22 @@ export default function RegistationForm() {
             <div className="form-field-valid">This is ok</div>
           ) : (
             <div className="form-field-invalid">{validation.password.err}</div>
+          ))}
+      </div>
+      <div className="form-line">
+        <label htmlFor="username">Password 2</label>
+        <input
+          id="username"
+          required
+          className="text-field"
+          onChange={onChangePasswordConfirmation}
+          type={"password"}
+        />
+        {validation.passwordConfirmation &&
+          (validation.passwordConfirmation.ok ? (
+            <div className="form-field-valid">This is ok</div>
+          ) : (
+            <div className="form-field-invalid">{validation.passwordConfirmation.err}</div>
           ))}
       </div>
       <div className="form-line">

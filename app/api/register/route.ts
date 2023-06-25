@@ -6,22 +6,28 @@ import { NextRequest, NextResponse } from "next/server";
 import executeRedisQuery from "@/utils/execute-redis-query";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isEmailAvailable from "@/utils/is-email-available";
-import { decryptEmailAddress, encryptEmailAddress } from "@/utils/encrypt-email-address";
+import { encryptEmailAddress } from "@/utils/encrypt-email-address";
 
 dotenv.config();
 
-const schema = z.object({
-  username: z
-    .string()
-    .min(5, { message: "Username must be min in 5 characters." })
-    .max(20, { message: "Username must be max in 20 characters." })
-    .regex(/^[a-z0-9_\.]+$/, { message: "Only lowercase letters, numbers, and underscore is allowed." })
-    .refine(isUsernameAvailable, "Username has been taken."),
-  email: z.string().toLowerCase().email().refine(isEmailAvailable, "There is an user registered with the email."),
-  password: z.string().regex(/(?=^.{6,}$)(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]).*/, {
-    message: "Choose a stronger password.",
-  }),
-});
+const schema = z
+  .object({
+    username: z
+      .string()
+      .min(5, { message: "Username must be min in 5 characters." })
+      .max(20, { message: "Username must be max in 20 characters." })
+      .regex(/^[a-z0-9_\.]+$/, { message: "Only lowercase letters, numbers, and underscore is allowed." })
+      .refine(isUsernameAvailable, "Username has been taken."),
+    email: z.string().toLowerCase().email().refine(isEmailAvailable, "There is an user registered with the email."),
+    password: z.string().regex(/(?=^.{6,}$)(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[^A-Za-z0-9]).*/, {
+      message: "Choose a stronger password.",
+    }),
+    passwordConfirmation: z.string(),
+  })
+  .refine(({ password, passwordConfirmation }) => password === passwordConfirmation, {
+    message: "Passwords don't match.",
+    path: ["passwordConfirmation"]
+  });
 
 export async function POST(
   request: NextRequest
