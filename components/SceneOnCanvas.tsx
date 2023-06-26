@@ -204,7 +204,7 @@ export default function SceneOnCanvas({
       if (sceneMode === SceneMode.Draw) {
         onAddVoxel && onAddVoxel(calculateNextVoxelPosition(clickedVoxelPosition, clickedFaceIndex));
       } else if (sceneMode === SceneMode.Delete) {
-        onDeleteVoxel && onDeleteVoxel(calculateNextVoxelPosition(clickedVoxelPosition, clickedFaceIndex));
+        onDeleteVoxel && onDeleteVoxel(clickedVoxelPosition);
       }
     }
   };

@@ -1,43 +1,29 @@
+import { kv } from "@vercel/kv";
+import sha256 from "sha256";
 import { NextRequest, NextResponse } from "next/server";
-import executeRedisQuery from "@/utils/execute-redis-query";
 
 export async function POST(
   request: NextRequest,
   { params: { sceneId } }: { params: { sceneId: string } }
-): Promise<NextResponse<{ isEditable: boolean }>> {
+): Promise<NextResponse<{ isEditable: boolean; err?: string }>> {
   const requestBody = await request.json();
   const authToken = requestBody.authToken;
-  let err;
-  let status;
-  let isEditable = false;
+  const user = await kv.get(`session:${sha256(authToken)}`);
 
-  await executeRedisQuery(async (redis) => {
-    const user = await redis.get(`session:${authToken}`);
+  if (!user) {
+    return NextResponse.json({ isEditable: false, err: "Authentication failed." }, { status: 401 });
+  }
 
-    if (!user) {
-      err = "Authentication failed.";
-      status = 401;
-      return;
-    }
+  const sceneExists = await kv.exists(`scene:${sceneId}`);
+  if (!sceneExists) {
+    return NextResponse.json({ isEditable: false, err: "Scene not found." }, { status: 404 });
+  }
 
-    const sceneExists = await redis.exists(`scene:${sceneId}`);
-    if (!sceneExists) {
-      err = "Scene not found."
-      status = 404;
-      return;
-    }
+  const scene = await kv.hgetall(`scene:${sceneId}`);
 
-    const scene = await redis.hGetAll(`scene:${sceneId}`);
+  if (scene!.user !== user) {
+    return NextResponse.json({ isEditable: false, err: "Authorization failed." }, { status: 403 });
+  }
 
-    if (scene.user !== user) {
-      err = "Authorization failed."
-      status = 403;
-      return;
-    }
-
-    status = 202;
-    isEditable = true;
-  });
-
-  return NextResponse.json({ isEditable }, { status });
+  return NextResponse.json({ isEditable: true }, { status: 202 });
 }

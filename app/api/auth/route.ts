@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import sha256 from "sha256";
+import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/types/Auth";
-import executeRedisQuery from "@/utils/execute-redis-query";
 
 dotenv.config();
 
@@ -15,12 +15,12 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ user?: 
   let user;
 
   if (deleteSession) {
-    await executeRedisQuery((redis) => redis.del(`session:${sha256(sessionKey)}`));
+    await kv.del(`session:${sha256(sessionKey)}`);
     sessionDeleted = true;
   } else {
-    const username = await executeRedisQuery((redis) => redis.get(`session:${sha256(sessionKey)}`));
+    const username = await kv.get<string>(`session:${sha256(sessionKey)}`);
     if (username) {
-      user = { username };
+      user = { username: username };
     }
   }
 

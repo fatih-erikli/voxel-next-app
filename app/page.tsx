@@ -1,10 +1,10 @@
+import { kv } from "@vercel/kv";
 import Navigation from "@/components/Navigation";
-import { Scene } from "@/components/Scene";
 import SceneOnCanvas from "@/components/SceneOnCanvas";
 import { SceneMode, VoxelScene } from "@/types/Voxel";
-import executeRedisQuery from "@/utils/execute-redis-query";
 import makeVoxelsCentered from "@/utils/make-voxels-centered";
 import Link from "next/link";
+import executeRedisQuery from "@/utils/execute-redis-query";
 
 export default async function Home({ searchParams: { offset } }: { searchParams: { offset: string } }) {
   let rangeStart = 0;
@@ -17,14 +17,11 @@ export default async function Home({ searchParams: { offset } }: { searchParams:
   const rangeEnd = rangeStart + 10;
   let scenes: VoxelScene[] = [];
   let count = 0;
-  await executeRedisQuery(async (redis) => {
-    count = await redis.lLen(`featured-content`);
-    const sceneIds = await redis.lRange(`featured-content`, rangeStart, rangeEnd);
-    for (const sceneId of sceneIds) {
-      const scene: any = await redis.hGetAll(`scene:${sceneId}`);
-      scenes.push({ ...scene, sceneId, user: { username: scene.user }, voxels: JSON.parse(scene.voxels) });
-    }
-  });
+  const sceneIds = await kv.lrange("featured-content", rangeStart, rangeEnd);
+  for (const sceneId of sceneIds) {
+    const scene: any = await kv.hgetall(`scene:${sceneId}`);
+    scenes.push({ ...scene, sceneId, user: { username: scene.user }, voxels: scene.voxels });
+  }
   const hasMore = count > rangeEnd;
   return (
     <>

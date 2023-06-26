@@ -2,8 +2,8 @@ import sha256 from "sha256";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import { z } from "zod";
+import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from "next/server";
-import executeRedisQuery from "@/utils/execute-redis-query";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isEmailAvailable from "@/utils/is-email-available";
 import { encryptEmailAddress } from "@/utils/encrypt-email-address";
@@ -40,15 +40,12 @@ export async function POST(
     const pepper = process.env.USER_PASSWORD_PEPPER;
     const passwordHashed = sha256(salt + pepper + requestBody.password);
     const emailEncrypted = encryptEmailAddress(validation.data.email);
-    await executeRedisQuery(async (redis) => {
-      await redis.hSet(`user:${username}`, {
-        username: validation.data.username,
-        password: passwordHashed,
-        email: emailEncrypted,
-        salt,
-      });
-      await redis.sAdd("emails", emailEncrypted);
-    });
+    await kv.hset(`user:${username}`, {
+      username: validation.data.username,
+      password: passwordHashed,
+      email: emailEncrypted,
+      salt,
+    })
     return NextResponse.json({ ok: true }, { status: 201 });
   } else {
     const validationResult: RegistrationFormValidation = {};

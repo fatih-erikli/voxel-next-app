@@ -133,6 +133,14 @@ label {
   display: flex;
   justify-content: space-between;
 }
+.document-header-full-screen {
+  display: flex;
+  position: absolute;
+  justify-content: space-between;
+  top: 3rem;
+  left: 1.5rem;
+  right: 1.5rem;
+}
 .tools {
   display: flex;
   gap: 0.5rem;

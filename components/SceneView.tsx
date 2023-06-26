@@ -93,9 +93,9 @@ export default function SceneView({
   return (
     <>
       {scale < 30 && <Navigation stickyHeader title={title} titleEditable={isOwner} onTitleChange={setTitle} />}
-      <div className="main full-screen" ref={mainRef}>
+      <div className={"main full-screen"} ref={mainRef}>
         {(sceneMode === SceneMode.Draw || sceneMode === SceneMode.Delete) && (
-          <div className="document-header">
+          <div className="document-header-full-screen">
             <>
               <Tools
                 currentColor={currentColor}

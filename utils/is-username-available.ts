@@ -1,6 +1,6 @@
-import executeRedisQuery from "./execute-redis-query";
+import { kv } from '@vercel/kv';
 
 export default async function isUsernameAvailable(username: string): Promise<boolean> {
-  const userExists = await executeRedisQuery(db => db.exists(`user:${username}`));
+  const userExists = await kv.exists(`user:${username}`);
   return !userExists;
 }

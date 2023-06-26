@@ -1,7 +1,8 @@
+import { kv } from "@vercel/kv";
+import sha256 from "sha256";
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import cleanVoxelContent from "@/utils/clean-voxel-content";
-import executeRedisQuery from "@/utils/execute-redis-query";
 
 export async function POST(request: NextRequest): Promise<NextResponse<{ err?: string; createdSceneId?: string }>> {
   const requestBody = await request.json();
@@ -9,8 +10,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ err?: s
   const title = requestBody.title;
 
   if (!title || title.length < 5 || title.length > 40) {
-    const err = "Title should be min in 5 max 40 characters.";
-    return NextResponse.json({ err }, { status: err ? 400 : 201 });
+    return NextResponse.json({ err: "Title should be min in 5 max 40 characters." }, { status: 400 });
   }
 
   const parsedContent = cleanVoxelContent(requestBody.voxels);
@@ -18,27 +18,17 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ err?: s
     return NextResponse.json({ err: parsedContent.err }, { status: 400 });
   }
 
-  let createdSceneId;
-  let err;
+  const user = await kv.get(`session:${sha256(authToken)}`);
+  if (!user) {
+    return NextResponse.json({ err: "Authorization failed." }, { status: 400 });
+  }
 
-  await executeRedisQuery(async (redis) => {
-    const user = await redis.get(`session:${authToken}`);
-
-    if (!user) {
-      err = "Authorization failed.";
-      return;
-    }
-
-    createdSceneId = crypto.randomBytes(24).toString("hex");
-
-    await redis.hSet(`scene:${createdSceneId}`, {
-      user,
-      voxels: JSON.stringify(parsedContent.voxels),
-      title,
-    });
-
-    await redis.lPush(`user-scenes:${user}`, createdSceneId);
+  const createdSceneId = crypto.randomBytes(24).toString("hex");
+  await kv.hset(`scene:${createdSceneId}`, {
+    user,
+    voxels: JSON.stringify(parsedContent.voxels),
+    title,
   });
-
-  return NextResponse.json({ createdSceneId, err }, { status: err ? 400 : 201 });
+  await kv.lpush(`user-scenes:${user}`, createdSceneId);
+  return NextResponse.json({ createdSceneId }, { status: 201 });
 }

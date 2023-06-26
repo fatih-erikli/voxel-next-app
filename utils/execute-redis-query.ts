@@ -2,10 +2,14 @@ import dotenv from "dotenv";
 import { createClient } from "redis";
 dotenv.config();
 
-type RedisClient = ReturnType<typeof createClient>
+type RedisClient = ReturnType<typeof createClient>;
 
 export default async function executeRedisQuery(callback: (redis: RedisClient) => any) {
-  const client = createClient({ url: process.env.REDIS_URI });
+  const client = createClient({
+    url: process.env.REDIS_URI,
+    username: process.env.REDIS_USERNAME,
+    password: process.env.REDIS_PASSWORD
+  });
   let result;
   try {
     await client.connect();
