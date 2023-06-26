@@ -9,20 +9,10 @@ dotenv.config();
 export async function POST(request: NextRequest): Promise<NextResponse<{ user?: User }>> {
   const requestBody = await request.json();
   const sessionKey = requestBody.authToken;
-  const deleteSession = requestBody.deleteSession;
-
-  let sessionDeleted;
+  const username = await kv.get<string>(`session:${sha256(sessionKey)}`);
   let user;
-
-  if (deleteSession) {
-    await kv.del(`session:${sha256(sessionKey)}`);
-    sessionDeleted = true;
-  } else {
-    const username = await kv.get<string>(`session:${sha256(sessionKey)}`);
-    if (username) {
-      user = { username: username };
-    }
+  if (username) {
+    user = { username: username };
   }
-
-  return NextResponse.json({ user }, { status: sessionDeleted ? 202 : user ? 202 : 401 });
+  return NextResponse.json({ user }, { status: user ? 202 : 401 });
 }

@@ -12,14 +12,10 @@ export default function Auth({ children }: { children: ReactNode }) {
       user,
       authToken,
       logout: async () => {
-        let response = await fetch(`/api/auth`, {
-          body: JSON.stringify({ authToken, deleteSession: true }),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        let response = await fetch(`/api/auth/${authToken}`, {
+          method: "DELETE",
         });
-        if (response.status === 202) {
+        if (response.status === 204) {
           sessionStorage.removeItem("auth-token");
           setAuthToken(null);
           setUser(null);

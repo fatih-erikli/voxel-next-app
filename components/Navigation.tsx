@@ -40,7 +40,7 @@ export default function Navigation({
           </>
         )}
       </nav>
-      {title && (
+      {title !== undefined && (
         <div className="page-title">
           {(titleEditable && onTitleChange) ? (
             <>

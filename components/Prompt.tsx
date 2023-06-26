@@ -21,7 +21,7 @@ export default function Prompt({
           onClose();
         }}
       >
-        <input ref={inputRef} type={"text"} value={value} onChange={(e) => onChange(e.target.value)} />
+        <input min={5} max={20} required ref={inputRef} type={"text"} value={value} onChange={(e) => onChange(e.target.value)} />
       </form>
     </dialog>
   );

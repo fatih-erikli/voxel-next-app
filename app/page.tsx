@@ -4,7 +4,6 @@ import SceneOnCanvas from "@/components/SceneOnCanvas";
 import { SceneMode, VoxelScene } from "@/types/Voxel";
 import makeVoxelsCentered from "@/utils/make-voxels-centered";
 import Link from "next/link";
-import executeRedisQuery from "@/utils/execute-redis-query";
 
 export default async function Home({ searchParams: { offset } }: { searchParams: { offset: string } }) {
   let rangeStart = 0;
