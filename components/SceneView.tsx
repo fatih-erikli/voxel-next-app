@@ -9,6 +9,7 @@ import { INITIAL_VOXEL } from "@/constants/voxels";
 import AuthContext from "@/context/AuthContext";
 import isEqualPoint3D from "@/utils/is-equal-point3d";
 import SceneOnCanvas from "./SceneOnCanvas";
+import { useRouter } from "next/navigation";
 
 export default function SceneView({
   voxels: voxelsPrefetched,
@@ -33,16 +34,17 @@ export default function SceneView({
   const canvasRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(20);
+  const router = useRouter();
   useEffect(() => {
     if (userSceneIds.includes(sceneId)) {
       setSceneMode(SceneMode.Draw);
     } else {
-      setSceneMode(SceneMode.View)
+      setSceneMode(SceneMode.View);
     }
   }, [userSceneIds, sceneId]);
   const onSaveClick = async () => {
     setIsSaveInProgress(true);
-    let response = await fetch(`/api/scenes/${sceneId}`, {
+    const response = await fetch(`/api/scenes/${sceneId}`, {
       body: JSON.stringify({
         authToken,
         title,
@@ -56,6 +58,23 @@ export default function SceneView({
     if (response.ok) {
     }
     setIsSaveInProgress(false);
+  };
+  const onDeleteSceneClick = async () => {
+    if (window.confirm("Do you really want to delete the scene?")) {
+      const response = await fetch(`/api/scenes/${sceneId}`, {
+        body: JSON.stringify({
+          authToken,
+          deleteScene: true,
+        }),
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 204) {
+        router.push("/");
+      }
+    }
   };
   useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -96,6 +115,7 @@ export default function SceneView({
               />
             </>
             <div className="document-actions">
+              <button onClick={onDeleteSceneClick}>Delete</button>
               <button disabled={isSaveInProgress} onClick={onSaveClick}>
                 {isSaveInProgress ? "Wait..." : "Save"}
               </button>

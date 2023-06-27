@@ -3,7 +3,7 @@ export type AuthContext = {
   user: User | null;
   sceneIds: string[];
   logout: () => Promise<void>;
-  setAuthToken: (authToken: string, user?: User, createBrowserSession?: true) => Promise<void>;
+  setAuthToken: (authToken: string, user?: User, sceneIds?: string[]) => Promise<void>;
   addSceneId: (sceneId: string) => void;
 };
 export type User = {

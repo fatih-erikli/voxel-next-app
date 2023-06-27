@@ -9,6 +9,7 @@ export async function PUT(
 ): Promise<NextResponse<{ ok: boolean; err?: string }>> {
   const requestBody = await request.json();
   const authToken = requestBody.authToken;
+  const deleteScene = requestBody.deleteScene;
 
   const user = await kv.get(`session:${sha256(authToken)}`);
 
@@ -19,6 +20,13 @@ export async function PUT(
   const sceneExists = await kv.exists(`scene:${sceneId}`);
   if (!sceneExists) {
     return NextResponse.json({ ok: false, err: "Scene not found." }, { status: 404 });
+  }
+
+  if (deleteScene) {
+    await kv.del(`scene:${sceneId}`);
+    await kv.lrem("featured-content", 1, sceneId);
+    await kv.lrem(`user-scenes:${user}`, 1, sceneId);
+    return new NextResponse(null, {status: 204});
   }
 
   const scene = await kv.hgetall(`scene:${sceneId}`);

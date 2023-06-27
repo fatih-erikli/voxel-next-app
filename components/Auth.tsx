@@ -27,13 +27,14 @@ export default function Auth({ children }: { children: ReactNode }) {
           setSceneIds([]);
         }
       },
-      setAuthToken: async (authToken: string, user?: User, createBrowserSession?: true) => {
+      setAuthToken: async (authToken: string, user?: User, sceneIds?: string[]) => {
         let _authToken;
         let _user;
         let _sceneIds;
         if (user) {
           _user = user;
           _authToken = authToken;
+          _sceneIds = sceneIds;
         } else {
           let response = await fetch(`/api/auth/${authToken}`, {
             headers: {
@@ -50,9 +51,7 @@ export default function Auth({ children }: { children: ReactNode }) {
             _authToken = null;
           }
         }
-        if (createBrowserSession) {
-          sessionStorage.setItem("auth-token", authToken);
-        }
+        sessionStorage.setItem("auth-token", authToken);
         setUser(_user);
         setAuthToken(_authToken);
         setSceneIds(_sceneIds);

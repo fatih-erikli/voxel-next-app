@@ -33,7 +33,7 @@ export default function LoginForm() {
     }
     let responseJson = await response.json();
     if (responseJson.authToken) {
-      await authContext.setAuthToken(responseJson.authToken, responseJson.user, true);
+      await authContext.setAuthToken(responseJson.authToken, responseJson.user, responseJson.sceneIds);
       setFormSubmissionState("success");
     } else {
       setFormSubmissionState("failed");
