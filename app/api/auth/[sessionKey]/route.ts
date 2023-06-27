@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import sha256 from "sha256";
 import { kv } from "@vercel/kv";
 import { NextRequest, NextResponse } from "next/server";
+import { User } from "@/types/Auth";
 
 dotenv.config();
 
@@ -22,4 +23,18 @@ export async function DELETE(
   } else {
     return NextResponse.json({ ok: false }, { status: 403 });
   }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params: { sessionKey } }: { params: { sessionKey: string } }
+): Promise<NextResponse<{ user?: User; sceneIds?: string[] }>> {
+  const username = await kv.get<string>(`session:${sha256(sessionKey)}`);
+  let user;
+  let sceneIds;
+  if (username) {
+    sceneIds = await kv.lrange(`user-scenes:${username}`, 0, -1);
+    user = { username: username };
+  }
+  return NextResponse.json({ user, sceneIds }, { status: user ? 202 : 401 });
 }

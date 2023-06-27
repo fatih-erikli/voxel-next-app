@@ -17,7 +17,7 @@ export default function Create() {
   const [sceneMode, setSceneMode] = useState<SceneMode>(SceneMode.Draw);
   const [currentColor, setCurrentColor] = useState<string>(INITIAL_VOXEL.color);
   const [size, setSize] = useState<{ width: number; height: number }>({ width: 512, height: 512 });
-  const { authToken } = useContext(AuthContext);
+  const { authToken, addSceneId } = useContext(AuthContext);
   const canvasRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const onSaveClick = async () => {
@@ -41,6 +41,7 @@ export default function Create() {
         break;
 
       case 201:
+        addSceneId(responseJson.createdSceneId);
         router.push(`/scenes/${responseJson.createdSceneId}?mode=edit`);
         break;
     }

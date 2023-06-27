@@ -25,34 +25,21 @@ export default function SceneView({
 }) {
   const [title, setTitle] = useState(titlePrefetched);
   const [isSaveInProgress, setIsSaveInProgress] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
   const [voxels, setVoxels] = useState<Voxel[]>(voxelsPrefetched);
   const [sceneMode, setSceneMode] = useState<SceneMode>(sceneModeInitial);
   const [currentColor, setCurrentColor] = useState<string>(INITIAL_VOXEL.color);
   const [size, setSize] = useState<{ width: number; height: number }>({ width: 512, height: 512 });
-  const { authToken } = useContext(AuthContext);
+  const { authToken, sceneIds: userSceneIds } = useContext(AuthContext);
   const canvasRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(20);
   useEffect(() => {
-    if (authToken) {
-      (async function () {
-        let response = await fetch(`/api/scenes/${sceneId}/auth`, {
-          body: JSON.stringify({ authToken }),
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.status === 202) {
-          setSceneMode(SceneMode.Draw);
-          setIsOwner(true);
-        }
-      })();
+    if (userSceneIds.includes(sceneId)) {
+      setSceneMode(SceneMode.Draw);
     } else {
-      setSceneMode(SceneMode.View);
+      setSceneMode(SceneMode.View)
     }
-  }, [authToken, sceneId]);
+  }, [userSceneIds, sceneId]);
   const onSaveClick = async () => {
     setIsSaveInProgress(true);
     let response = await fetch(`/api/scenes/${sceneId}`, {
@@ -92,11 +79,13 @@ export default function SceneView({
   const onScaleChange = (scale: number) => {
     setScale(scale);
   };
+  const presentationMode = scale > 30;
+  const isOwner = userSceneIds.includes(sceneId);
   return (
     <>
-      {scale < 30 && <Navigation stickyHeader title={title} titleEditable={isOwner} onTitleChange={setTitle} />}
+      {!presentationMode && <Navigation stickyHeader title={title} titleEditable={isOwner} onTitleChange={setTitle} />}
       <div className={"main full-screen"} ref={mainRef}>
-        {(sceneMode === SceneMode.Draw || sceneMode === SceneMode.Delete) && (
+        {(sceneMode === SceneMode.Draw || sceneMode === SceneMode.Delete) && !presentationMode && (
           <div className="document-header-full-screen">
             <>
               <Tools

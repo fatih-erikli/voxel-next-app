@@ -7,12 +7,14 @@ import { User } from "@/types/Auth";
 
 dotenv.config();
 
-export async function POST(request: NextRequest): Promise<NextResponse<{ authToken?: string; user?: User }>> {
+export async function POST(
+  request: NextRequest
+): Promise<NextResponse<{ authToken?: string; user?: User; sceneIds?: string[] }>> {
   const requestBody = await request.json();
   const username = requestBody.username;
   let authToken;
   let user;
-
+  let sceneIds;
   const matchedUser = await kv.hgetall<Record<string, string>>(`user:${username}`);
   if (matchedUser) {
     const pepper = process.env.USER_PASSWORD_PEPPER;
@@ -20,8 +22,9 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ authTok
     if (matchedUser.password === passwordHashed) {
       const sessionKey = crypto.randomBytes(24).toString("hex");
       await kv.setex(`session:${sha256(sessionKey)}`, 60 * 30, matchedUser.username);
+      sceneIds = await kv.lrange(`user-scenes:${matchedUser.username}`, 0, -1);
       authToken = sessionKey;
-      user = { username: matchedUser.username }; // user model has only a username publicly available for now
+      user = { username: matchedUser.username };
     }
   }
 
@@ -29,6 +32,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ authTok
     {
       authToken,
       user,
+      sceneIds,
     },
     { status: authToken ? 202 : 401 }
   );
