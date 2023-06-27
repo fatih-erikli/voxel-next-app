@@ -193,6 +193,9 @@ label {
 }
 .prompt-dialog {
   align-self: center;
+  border: none;
+  box-shadow: 0px 0px 3px #b9b9b9;
+  min-width: 280px;
 }
 .prompt-overlay {
   position: absolute;
