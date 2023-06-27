@@ -49,6 +49,8 @@ export default function SceneView({
           setIsOwner(true);
         }
       })();
+    } else {
+      setSceneMode(SceneMode.View);
     }
   }, [authToken, sceneId]);
   const onSaveClick = async () => {
