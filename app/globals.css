@@ -183,3 +183,23 @@ label {
   align-items: center;
   height: 100%;
 }
+.prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.prompt-form input[type="submit"] {
+  width: max-content;
+}
+.prompt-dialog {
+  align-self: center;
+}
+.prompt-overlay {
+  position: absolute;
+  width: 100dvw;
+  display: flex;
+  height: 100dvh;
+  top: 0;
+  left: 0;
+  background-color: #00000017;
+}

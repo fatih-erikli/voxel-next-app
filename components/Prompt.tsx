@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Prompt({
   value,
@@ -9,20 +9,46 @@ export default function Prompt({
   onClose: () => void;
   onChange: (value: string) => void;
 }) {
+  const [text, setText] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current!.focus();
   }, []);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   return (
-    <dialog open>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          onClose();
-        }}
-      >
-        <input min={5} max={20} required ref={inputRef} type={"text"} value={value} onChange={(e) => onChange(e.target.value)} />
-      </form>
-    </dialog>
+    <div
+      className="prompt-overlay"
+      onClick={(event) => {
+        if ((event.target as HTMLElement).matches(".prompt-overlay")) {
+          onClose()
+        }
+      }}
+    >
+      <dialog ref={dialogRef} open className="prompt-dialog">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            onClose();
+          }}
+          className="prompt-form"
+        >
+          <label htmlFor="promptText">Scene title</label>
+          <input
+            id="promptText"
+            min={5}
+            max={20}
+            required
+            ref={inputRef}
+            type={"text"}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <input type="submit" value="Save" onClick={() => {
+            onChange(text)
+            onClose();
+          }} />
+        </form>
+      </dialog>
+    </div>
   );
 }
