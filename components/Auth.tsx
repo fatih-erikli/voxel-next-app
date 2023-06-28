@@ -14,7 +14,7 @@ export default function Auth({ children }: { children: ReactNode }) {
       authToken,
       sceneIds,
       addSceneId: (sceneId: string) => {
-        setSceneIds([...sceneIds, sceneId])
+        setSceneIds([...sceneIds, sceneId]);
       },
       logout: async () => {
         let response = await fetch(`/api/auth/${authToken}`, {
@@ -52,9 +52,9 @@ export default function Auth({ children }: { children: ReactNode }) {
           }
         }
         sessionStorage.setItem("auth-token", authToken);
-        setUser(_user);
-        setAuthToken(_authToken);
-        setSceneIds(_sceneIds);
+        setUser(_user || null);
+        setAuthToken(_authToken || null);
+        setSceneIds(_sceneIds || []);
       },
     };
   }, [user, authToken, sceneIds]);

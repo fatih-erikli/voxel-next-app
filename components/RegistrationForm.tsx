@@ -30,10 +30,8 @@ export default function RegistationForm() {
       try {
         responseJson = await response.json();
       } catch (e) {
-        if (!response.ok) {
-          setFormSubmissionState("failed");
-          return;
-        }
+        setFormSubmissionState("failed");
+        return;
       }
 
       if (responseJson) {

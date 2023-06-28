@@ -2,7 +2,7 @@ import sha256 from "sha256";
 import crypto from "crypto";
 import dotenv from "dotenv";
 import { z } from "zod";
-import { kv } from '@vercel/kv';
+import { kv } from "@vercel/kv";
 import { NextRequest, NextResponse } from "next/server";
 import isUsernameAvailable from "@/utils/is-username-available";
 import isEmailAvailable from "@/utils/is-email-available";
@@ -26,7 +26,7 @@ const schema = z
   })
   .refine(({ password, passwordConfirmation }) => password === passwordConfirmation, {
     message: "Passwords don't match.",
-    path: ["passwordConfirmation"]
+    path: ["passwordConfirmation"],
   });
 
 export async function POST(
@@ -45,7 +45,8 @@ export async function POST(
       password: passwordHashed,
       email: emailEncrypted,
       salt,
-    })
+    });
+    await kv.sadd("emails", emailEncrypted);
     return NextResponse.json({ ok: true }, { status: 201 });
   } else {
     const validationResult: RegistrationFormValidation = {};
