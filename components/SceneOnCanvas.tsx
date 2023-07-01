@@ -83,7 +83,7 @@ export default function SceneOnCanvas({
 }) {
   const [azimuth, setAzimuth] = useState(110);
   const [elevation, setElevation] = useState(220);
-  const [panTo, setPanTo] = useState<Point2D>({ x: 0, y: 0 });
+  const [panTo, setPanTo] = useState<Point2D>({ x: width/2, y: height/2 });
   const [scale, setScale] = useState(scaleInitial);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
