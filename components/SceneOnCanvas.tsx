@@ -57,6 +57,11 @@ function clamp(number: number, min: number, max: number) {
   return Math.max(min, Math.min(max, number));
 }
 
+function pointOnTarget(element: HTMLElement, x: number, y: number): Point2D {
+  const canvasClientRect = element.getBoundingClientRect();
+  return { x: x - canvasClientRect.x, y: y - canvasClientRect.y };
+}
+
 export default function SceneOnCanvas({
   voxels,
   sceneMode,
@@ -82,17 +87,26 @@ export default function SceneOnCanvas({
   const [scale, setScale] = useState(scaleInitial);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
+    setPanTo({ x: width / 2, y: height / 2 });
+  }, [width, height]);
+  useEffect(() => {
     const element = canvasRef.current!;
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       if (event.ctrlKey) {
-        const _scale = clamp(
-          scale - (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX / 2 : event.deltaY / 2),
-          4,
-          200
-        );
-        setScale(_scale);
-        onScaleChange && onScaleChange(_scale);
+        const pointer = pointOnTarget(element, event.clientX, event.clientY);
+        const pinchMultipier = 0.5;
+        const scaleDelta =
+          Math.abs(event.deltaX) > Math.abs(event.deltaY)
+            ? event.deltaX * pinchMultipier
+            : event.deltaY * pinchMultipier;
+        const newScale = clamp(scale - scaleDelta, 4, 200);
+        setScale(newScale);
+        setPanTo({
+          x: (pointer.x / newScale - (pointer.x / scale - panTo.x / scale)) * newScale,
+          y: (pointer.y / newScale - (pointer.y / scale - panTo.y / scale)) * newScale,
+        });
+        onScaleChange && onScaleChange(newScale);
       } else {
         const deltaX = event.deltaX / 4;
         const deltaY = event.deltaY / 4;
@@ -104,7 +118,7 @@ export default function SceneOnCanvas({
     return () => {
       element.removeEventListener("wheel", onWheel);
     };
-  }, [scale, onScaleChange]);
+  }, [scale, panTo, onScaleChange]);
   const projection = useMemo(() => {
     const angleX = (azimuth / 180) * Math.PI;
     const angleY = (elevation / 180) * Math.PI;
@@ -155,8 +169,8 @@ export default function SceneOnCanvas({
       const path = new Path2D();
       for (const [moveTo, point] of makePolygon(points)) {
         const screenCoordinates = {
-          x: (panTo.x + point.x + width / 2) * 2,
-          y: (panTo.y + point.y + height / 2) * 2,
+          x: (panTo.x + point.x) * 2,
+          y: (panTo.y + point.y) * 2,
         };
         if (moveTo) {
           path.moveTo(screenCoordinates.x, screenCoordinates.y);
@@ -171,22 +185,19 @@ export default function SceneOnCanvas({
       context.fill(path);
       context.stroke(path);
     }
-  }, [voxels, computedMesh, width, height, panTo]);
+  }, [voxels, computedMesh, width, height, panTo, scale]);
   const onClickCanvas: PointerEventHandler<HTMLCanvasElement> = (event) => {
     let clickedVoxelPosition;
     let clickedFaceIndex;
-
     const canvas = canvasRef.current!;
     const context = canvas.getContext("2d")!;
-    const canvasClientRect = canvas.getBoundingClientRect();
-    const pointOnCanvas = { x: event.clientX - canvasClientRect.x, y: event.clientY - canvasClientRect.y };
-
+    const pointOnCanvas = pointOnTarget(canvas, event.clientX, event.clientY);
     for (const [points, voxel, faceIndex] of reverseArray(computedMesh)) {
       const path = new Path2D();
       for (const [moveTo, point] of makePolygon(points)) {
         const screenCoordinates = {
-          x: panTo.x + point.x + width / 2,
-          y: panTo.y + point.y + height / 2,
+          x: panTo.x + point.x,
+          y: panTo.y + point.y,
         };
         if (moveTo) {
           path.moveTo(screenCoordinates.x, screenCoordinates.y);
