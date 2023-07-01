@@ -4,7 +4,7 @@ import { Point3D, SceneMode, Voxel } from "@/types/Voxel";
 import { Scene } from "./Scene";
 import Navigation from "./Navigation";
 import Tools from "./Tools";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { INITIAL_VOXEL } from "@/constants/voxels";
 import AuthContext from "@/context/AuthContext";
 import isEqualPoint3D from "@/utils/is-equal-point3d";
@@ -29,12 +29,29 @@ export default function SceneView({
   const [voxels, setVoxels] = useState<Voxel[]>(voxelsPrefetched);
   const [sceneMode, setSceneMode] = useState<SceneMode>(sceneModeInitial);
   const [currentColor, setCurrentColor] = useState<string>(INITIAL_VOXEL.color);
-  const [size, setSize] = useState<{ width: number; height: number }>({ width: 512, height: 512 });
+  const [size, setSize] = useState<{ width: number; height: number; isCalculated: boolean }>({
+    width: 512,
+    height: 512,
+    isCalculated: false,
+  });
   const { authToken, sceneIds: userSceneIds } = useContext(AuthContext);
   const canvasRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(20);
   const router = useRouter();
+  useLayoutEffect(() => {
+    const observer = new ResizeObserver(() => {
+      if (canvasRef.current) {
+        const { width, height } = canvasRef.current!.getBoundingClientRect();
+        setSize({ width, height, isCalculated: true });
+      }
+    });
+    observer.observe(canvasRef.current!);
+    // issue, resize observer does not work when a child component appended to the main
+    return () => {
+      observer.disconnect();
+    };
+  }, [sceneMode]);
   useEffect(() => {
     if (userSceneIds.includes(sceneId)) {
       setSceneMode(SceneMode.Draw);
@@ -76,19 +93,6 @@ export default function SceneView({
       }
     }
   };
-  useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (canvasRef.current) {
-        const { width, height } = canvasRef.current!.getBoundingClientRect();
-        setSize({ width, height });
-      }
-    });
-    observer.observe(canvasRef.current!);
-    // issue, resize observer does not work when a child component appended to the main
-    return () => {
-      observer.disconnect();
-    };
-  }, [sceneMode]);
   const onAddVoxel = (position: Point3D) => {
     setVoxels([...voxels, { position, color: currentColor }]);
   };
@@ -123,26 +127,30 @@ export default function SceneView({
           </div>
         )}
         <div className="canvas" ref={canvasRef}>
-          {renderer === "canvas" ? (
-            <SceneOnCanvas
-              onScaleChange={onScaleChange}
-              voxels={voxels}
-              sceneMode={sceneMode}
-              width={size.width}
-              height={size.height}
-              onAddVoxel={onAddVoxel}
-              onDeleteVoxel={onDeleteVoxel}
-            />
+          {size.isCalculated ? (
+            renderer === "canvas" ? (
+              <SceneOnCanvas
+                onScaleChange={onScaleChange}
+                voxels={voxels}
+                sceneMode={sceneMode}
+                width={size.width}
+                height={size.height}
+                onAddVoxel={onAddVoxel}
+                onDeleteVoxel={onDeleteVoxel}
+              />
+            ) : (
+              <Scene
+                onScaleChange={onScaleChange}
+                voxels={voxels}
+                sceneMode={sceneMode}
+                width={size.width}
+                height={size.height}
+                onAddVoxel={onAddVoxel}
+                onDeleteVoxel={onDeleteVoxel}
+              />
+            )
           ) : (
-            <Scene
-              onScaleChange={onScaleChange}
-              voxels={voxels}
-              sceneMode={sceneMode}
-              width={size.width}
-              height={size.height}
-              onAddVoxel={onAddVoxel}
-              onDeleteVoxel={onDeleteVoxel}
-            />
+            <progress />
           )}
         </div>
       </div>
