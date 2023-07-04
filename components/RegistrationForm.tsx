@@ -11,7 +11,6 @@ export default function RegistationForm() {
     email: "",
   });
   const [validation, setValidation] = useState<RegistrationFormValidation>({});
-  const usernameAvailabilityQueryDelay = useRef<ReturnType<typeof setTimeout /*[0]*/> | null>(null);
   const [formSubmissionState, setFormSubmissionState] = useState<"in-progress" | "success" | "failed">();
   const onSubmit: FormEventHandler = async (event) => {
     event.preventDefault();
@@ -72,20 +71,6 @@ export default function RegistationForm() {
   const onChangeUsername: ChangeEventHandler<HTMLInputElement> = (event) => {
     setValidation(omit(validation, "username"));
     setFormState({ ...formState, username: event.target.value });
-    if (usernameAvailabilityQueryDelay.current) {
-      clearTimeout(usernameAvailabilityQueryDelay.current);
-    }
-    usernameAvailabilityQueryDelay.current = setTimeout(async () => {
-      if (isUsernameValid(event.target.value)) {
-        let response = await fetch(`/api/username-availability?username=${event.target.value}`);
-        let responseJson = await response.json();
-        if (responseJson.ok) {
-          setValidation({ ...validation, username: { ok: true } });
-        } else {
-          setValidation({ ...validation, username: { ok: false, err: "Username has already taken." } });
-        }
-      }
-    }, 1000);
   };
   const onChangePassword: ChangeEventHandler<HTMLInputElement> = (event) => {
     setValidation(omit(validation, "password"));
@@ -172,10 +157,3 @@ export default function RegistationForm() {
     </form>
   );
 }
-/*
-Notes
-- [0] I am not sure about this one in JS but the TS integration of vscode is ok with that.
-
-Incomplete parts
-- Password validation
-*/
