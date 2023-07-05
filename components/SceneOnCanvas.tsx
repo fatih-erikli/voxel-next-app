@@ -64,6 +64,7 @@ function pointOnTarget(element: HTMLElement, x: number, y: number): Point2D {
 
 const MAX_ELEVATION = 226;
 const MIN_ELEVATION = 150;
+const ZOOM_PAN_ENABLED = false;
 
 export default function SceneOnCanvas({
   voxels,
@@ -97,7 +98,6 @@ export default function SceneOnCanvas({
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
       if (event.ctrlKey) {
-        const pointer = pointOnTarget(element, event.clientX, event.clientY);
         const pinchMultipier = 0.5;
         const scaleDelta =
           Math.abs(event.deltaX) > Math.abs(event.deltaY)
@@ -105,10 +105,13 @@ export default function SceneOnCanvas({
             : event.deltaY * pinchMultipier;
         const newScale = clamp(scale - scaleDelta, 4, 200);
         setScale(newScale);
-        setPanTo({
-          x: (pointer.x / newScale - (pointer.x / scale - panTo.x / scale)) * newScale,
-          y: (pointer.y / newScale - (pointer.y / scale - panTo.y / scale)) * newScale,
-        });
+        if (ZOOM_PAN_ENABLED) {
+          const pointer = pointOnTarget(element, event.clientX, event.clientY);
+          setPanTo({
+            x: (pointer.x / newScale - (pointer.x / scale - panTo.x / scale)) * newScale,
+            y: (pointer.y / newScale - (pointer.y / scale - panTo.y / scale)) * newScale,
+          });
+        }
         onScaleChange && onScaleChange(newScale);
       } else {
         const deltaX = event.deltaX / 4;
