@@ -33,15 +33,15 @@ export async function POST(
   request: NextRequest
 ): Promise<NextResponse<{ ok: boolean; validationResult?: RegistrationFormValidation }>> {
   const requestBody = await request.json();
-  const username = requestBody.username;
   const validation = await schema.safeParseAsync(requestBody);
   if (validation.success) {
+    const username = validation.data.username;
     const salt = crypto.randomBytes(16).toString("hex");
     const pepper = process.env.USER_PASSWORD_PEPPER;
     const passwordHashed = sha256(salt + pepper + requestBody.password);
     const emailEncrypted = encryptEmailAddress(validation.data.email);
     await kv.hset(`user:${username}`, {
-      username: validation.data.username,
+      username,
       password: passwordHashed,
       email: emailEncrypted,
       salt,
