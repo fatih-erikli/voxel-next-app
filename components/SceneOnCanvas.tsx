@@ -62,6 +62,9 @@ function pointOnTarget(element: HTMLElement, x: number, y: number): Point2D {
   return { x: x - canvasClientRect.x, y: y - canvasClientRect.y };
 }
 
+const MAX_ELEVATION = 226;
+const MIN_ELEVATION = 150;
+
 export default function SceneOnCanvas({
   voxels,
   sceneMode,
@@ -83,7 +86,7 @@ export default function SceneOnCanvas({
 }) {
   const [azimuth, setAzimuth] = useState(110);
   const [elevation, setElevation] = useState(220);
-  const [panTo, setPanTo] = useState<Point2D>({ x: width/2, y: height/2 });
+  const [panTo, setPanTo] = useState<Point2D>({ x: width / 2, y: height / 2 });
   const [scale, setScale] = useState(scaleInitial);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -111,7 +114,7 @@ export default function SceneOnCanvas({
         const deltaX = event.deltaX / 4;
         const deltaY = event.deltaY / 4;
         setAzimuth((azimuth) => azimuth + deltaX);
-        setElevation((elevation) => clamp(elevation - deltaY, 150, 226));
+        setElevation((elevation) => clamp(elevation - deltaY, MIN_ELEVATION, MAX_ELEVATION));
       }
     };
     element.addEventListener("wheel", onWheel, { passive: false });
@@ -229,7 +232,7 @@ export default function SceneOnCanvas({
       onPointerMove={(event) => {
         if (event.buttons === 1) {
           setAzimuth(azimuth - event.movementX);
-          setElevation(elevation + event.movementY);
+          setElevation(clamp(elevation + event.movementY, MIN_ELEVATION, MAX_ELEVATION));
         } else if (event.buttons === 2) {
           setPanTo(Vec2.fromValues(panTo.x + event.movementX, panTo.y + event.movementY));
         }

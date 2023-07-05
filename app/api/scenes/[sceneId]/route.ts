@@ -26,7 +26,7 @@ export async function PUT(
     await kv.del(`scene:${sceneId}`);
     await kv.lrem("featured-content", 1, sceneId);
     await kv.lrem(`user-scenes:${user}`, 1, sceneId);
-    return new NextResponse(null, {status: 204});
+    return new NextResponse(null, { status: 204 });
   }
 
   const scene = await kv.hgetall(`scene:${sceneId}`);
