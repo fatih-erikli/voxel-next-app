@@ -46,12 +46,12 @@ export default function Auth({ children }: { children: ReactNode }) {
             _user = responseJson.user;
             _authToken = authToken;
             _sceneIds = responseJson.sceneIds;
+            sessionStorage.removeItem("auth-token");
           } else {
             _user = null;
             _authToken = null;
           }
         }
-        sessionStorage.setItem("auth-token", authToken);
         setUser(_user || null);
         setAuthToken(_authToken || null);
         setSceneIds(_sceneIds || []);

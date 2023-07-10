@@ -34,6 +34,7 @@ export default function LoginForm() {
     let responseJson = await response.json();
     if (responseJson.authToken) {
       await authContext.setAuthToken(responseJson.authToken, responseJson.user, responseJson.sceneIds);
+      sessionStorage.setItem("auth-token", responseJson.authToken);
       setFormSubmissionState("success");
     } else {
       setFormSubmissionState("failed");
