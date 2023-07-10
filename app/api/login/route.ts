@@ -21,7 +21,7 @@ export async function POST(
     const passwordHashed = sha256(matchedUser.salt + pepper! + requestBody.password);
     if (matchedUser.password === passwordHashed) {
       const sessionKey = crypto.randomBytes(24).toString("hex");
-      await kv.setex(`session:${sha256(sessionKey)}`, 60 * 30, matchedUser.username);
+      await kv.setex(`session:${sha256(sessionKey)}`, 60 * 60 * 2, matchedUser.username);
       sceneIds = await kv.lrange(`user-scenes:${matchedUser.username}`, 0, -1);
       authToken = sessionKey;
       user = { username: matchedUser.username };

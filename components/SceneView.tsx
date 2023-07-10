@@ -130,7 +130,6 @@ export default function SceneView({
           {size.isCalculated ? (
             renderer === "canvas" ? (
               <SceneOnCanvas
-                onScaleChange={onScaleChange}
                 voxels={voxels}
                 sceneMode={sceneMode}
                 width={size.width}
