@@ -64,7 +64,6 @@ function pointOnTarget(element: HTMLElement, x: number, y: number): Point2D {
 
 const MAX_ELEVATION = 226;
 const MIN_ELEVATION = 150;
-const ZOOM_PAN_ENABLED = false;
 
 export default function SceneOnCanvas({
   voxels,
@@ -74,7 +73,6 @@ export default function SceneOnCanvas({
   onAddVoxel,
   onDeleteVoxel,
   scale: scaleInitial = 20,
-  onScaleChange,
 }: {
   voxels: Voxel[];
   sceneMode: SceneMode;
@@ -83,7 +81,6 @@ export default function SceneOnCanvas({
   onAddVoxel?: (position: Point3D) => void;
   onDeleteVoxel?: (position: Point3D) => void;
   scale?: number;
-  onScaleChange?: (scale: number) => void;
 }) {
   const [azimuth, setAzimuth] = useState(110);
   const [elevation, setElevation] = useState(220);
@@ -103,16 +100,7 @@ export default function SceneOnCanvas({
           Math.abs(event.deltaX) > Math.abs(event.deltaY)
             ? event.deltaX * pinchMultipier
             : event.deltaY * pinchMultipier;
-        const newScale = clamp(scale - scaleDelta, 4, 200);
-        setScale(newScale);
-        if (ZOOM_PAN_ENABLED) {
-          const pointer = pointOnTarget(element, event.clientX, event.clientY);
-          setPanTo({
-            x: (pointer.x / newScale - (pointer.x / scale - panTo.x / scale)) * newScale,
-            y: (pointer.y / newScale - (pointer.y / scale - panTo.y / scale)) * newScale,
-          });
-        }
-        onScaleChange && onScaleChange(newScale);
+        setScale(scale => clamp(scale - scaleDelta, 4, 200));
       } else {
         const deltaX = event.deltaX / 4;
         const deltaY = event.deltaY / 4;
@@ -124,7 +112,7 @@ export default function SceneOnCanvas({
     return () => {
       element.removeEventListener("wheel", onWheel);
     };
-  }, [scale, panTo, onScaleChange]);
+  }, [panTo]);
   const projection = useMemo(() => {
     const angleX = (azimuth / 180) * Math.PI;
     const angleY = (elevation / 180) * Math.PI;
